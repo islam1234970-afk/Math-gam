@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أبطال جدول الضرب</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;800;900&display=swap');
+
+:root {
+--purple: #7545e8;
+--pink: #ff5da2;
+--yellow: #ffce45;
+--green: #22c985;
+--blue: #42b9f5;
+}
+
+• {
+box-sizing: border-box;
+}
+
+body {
+margin: 0;
+min-height: 100vh;
+font-family: 'Cairo', Tahoma, sans-serif;
+background: linear-gradient(135deg, #e5f5ff, #f9e8ff, #fff4d9);
+color: #302354;
+display: flex;
+justify-content: center;
+align-items: center;
+padding: 18px;
+}
+
+.game {
+width: 100%;
+max-width: 520px;
+background: white;
+border-radius: 32px;
+padding: 24px;
+box-shadow: 0 18px 55px #6940a326;
+text-align: center;
+overflow: hidden;
+position: relative;
+}
+
+.top-stars {
+font-size: 25px;
+letter-spacing: 8px;
+margin-bottom: 5px;
+}
+
+.mascot {
+font-size: 76px;
+animation: bounce 2s infinite;
+line-height: 1.4;
+}
+
+@keyframes bounce {
+0%, 100% { transform: translateY(0); }
+50% { transform: translateY(-9px); }
+}
+
+h1 {
+font-size: clamp(25px, 6vw, 34px);
+margin: 5px 0;
+color: var(--purple);
+font-weight: 900;
+}
+
+.subtitle {
+color: #8a7ba9;
+font-size: 14px;
+margin-bottom: 20px;
+}
+
+.stats {
+display: flex;
+gap: 8px;
+margin: 18px 0;
+}
+
+.stat {
+flex: 1;
+padding: 10px 4px;
+border-radius: 17px;
+font-weight: 800;
+font-size: 14px;
+}
+
+.score { background: #fff1b9; }
+.lives { background: #ffe4ec; }
+.level { background: #e2f7ec; }
+
+.progress-bg {
+background: #eee8fb;
+height: 10px;
+border-radius: 20px;
+overflow: hidden;
+margin-bottom: 22px;
+}
+
+.progress {
+height: 100%;
+width: 0;
+background: linear-gradient(90deg, var(--pink), var(--purple));
+border-radius: 20px;
+transition: width .4s;
+}
+
+.message {
+min-height: 47px;
+padding: 10px;
+background: #f5f0ff;
+border-radius: 15px;
+font-size: 15px;
+font-weight: 800;
+margin-bottom: 18px;
+color: var(--purple);
+}
+
+.question {
+font-size: clamp(39px, 10vw, 52px);
+font-weight: 900;
+color: #38245e;
+margin: 14px 0 20px;
+direction: ltr;
+}
+
+.answers {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 12px;
+}
+
+.answer {
+border: 3px solid #eee7ff;
+background: #fff;
+border-radius: 19px;
+min-height: 68px;
+font-family: inherit;
+font-size: 27px;
+font-weight: 900;
+color: var(--purple);
+cursor: pointer;
+transition: .18s;
+}
+
+.answer:hover {
+transform: translateY(-3px);
+border-color: var(--purple);
+background: #f7f2ff;
+}
+
+.answer:active {
+transform: scale(.96);
+}
+
+.answer.correct {
+background: #d9ffed;
+border-color: var(--green);
+color: #087d4a;
+}
+
+.answer.wrong {
+background: #ffe3e9;
+border-color: #ff6b87;
+color: #c62d4c;
+}
+
+.answer:disabled {
+cursor: default;
+}
+
+.footer {
+margin-top: 22px;
+color: #9a8bb4;
+font-size: 12px;
+}
+
+.primary-btn {
+background: linear-gradient(135deg, var(--purple), #a15cf5);
+border: none;
+color: white;
+padding: 14px 30px;
+border-radius: 18px;
+font-family: inherit;
+font-size: 17px;
+font-weight: 900;
+cursor: pointer;
+box-shadow: 0 7px 18px #7545e844;
+transition: .2s;
+}
+
+.primary-btn:hover {
+transform: translateY(-3px);
+}
+
+.hidden {
+display: none !important;
+}
+
+#result {
+padding: 15px 0;
+}
+
+.result-emoji {
+font-size: 80px;
+}
+
+.result-title {
+color: var(--purple);
+font-size: 28px;
+font-weight: 900;
+}
+
+.result-score {
+font-size: 42px;
+color: #f3a900;
+font-weight: 900;
+}
+
+.result-message {
+line-height: 2;
+color: #786894;
+margin: 15px 0 25px;
+}
+
+.confetti {
+position: fixed;
+top: -20px;
+z-index: 10;
+pointer-events: none;
+animation: fall 2.5s linear forwards;
+font-size: 25px;
+}
+
+@keyframes fall {
+to {
+transform: translateY(110vh) rotate(700deg);
+opacity: 0;
+}
+}
+
+@media (max-width: 380px) {
+.game { padding: 17px; }
+.answer { min-height: 60px; }
+}
+</style>
+</head>
+
+<body>
+
+<main class="game">
+<div class="top-stars">⭐ 🌈 ⭐</div>
+
+<div class="mascot" id="mascot">🦁</div>
+
+<h1>أبطال جدول الضرب</h1>
+<div class="subtitle">اتعلم والعب واثبت إنك بطل الحساب! 🚀</div>
+
+<div class="stats" id="stats">
+<div class="stat score">🏆 النقاط<br><span id="score">0</span></div>
+<div class="stat lives">❤️ المحاولات<br><span id="lives">3</span></div>
+<div class="stat level">🎯 السؤال<br><span id="round">1 / 10</span></div>
+</div>
+
+<div class="progress-bg" id="progressBg">
+<div class="progress" id="progress"></div>
+</div>
+
+<div class="message" id="message">
+يلا يا بطل! مستعد نبدأ المغامرة؟ 💪
+</div>
+
+<section id="startScreen">
+<p style="line-height:2;color:#75678f">
+جاوب على 10 أسئلة في جدول الضرب، واجمع أكبر عدد من النجوم! 🌟
+</p>
+<button class="primary-btn" onclick="startGame()">
+🚀 ابدأ اللعب
+</button>
+</section>
+
+<section id="quiz" class="hidden">
+<div class="question" id="question">5 × 4 = ؟</div>
+<div class="answers" id="answers"></div>
+<div class="footer">فكّر كويس واختار إجابتك الصح 🧠</div>
+</section>
+
+<section id="result" class="hidden">
+<div class="result-emoji" id="resultEmoji">🏆</div>
+<div class="result-title" id="resultTitle">أنت بطل!</div>
+<div class="result-score" id="resultScore">100 / 100</div>
+<div class="result-message" id="resultMessage"></div>
+<button class="primary-btn" onclick="startGame()">
+🔄 العب مرة تانية
+</button>
+</section>
+</main>
+
+<script>
+const encouragement = [
+"برافو يا بطل! إجابة ممتازة! 🌟",
+"الله عليك! دماغك شغالة زي الصاروخ! 🚀",
+"عاش يا عبقري! كمل بنفس القوة! 🧠",
+"ممتاز! أنت بتتعلم بسرعة! 🎉",
+"يا سلام عليك! تستاهل نجمة! ⭐",
+"أحسنت! أنت بطل الحساب! 🦁"
+];
+
+const tryAgainMessages = [
+"ولا يهمك! الغلط بيساعدنا نتعلم 💪",
+"حاول تاني يا بطل، أنت تقدر! 🌈",
+"ركز شوية وهتوصل للإجابة الصح! 🧠"
+];
+
+let score = 0;
+let lives = 3;
+let round = 0;
+let correctAnswer = 0;
+let locked = false;
+let questions = [];
+let wrongCount = 0;
+
+function shuffle(array) {
+for (let i = array.length - 1; i > 0; i--) {
+const j = Math.floor(Math.random() * (i + 1));
+[array[i], array[j]] = [array[j], array[i]];
+}
+return array;
+}
+
+function startGame() {
+score = 0;
+lives = 3;
+round = 0;
+wrongCount = 0;
+locked = false;
+
+// عشرة أسئلة عشوائية من جدول الضرب من 1 إلى 12
+questions = [];
+while (questions.length < 10) {
+const a = Math.floor(Math.random() * 12) + 1;
+const b = Math.floor(Math.random() * 12) + 1;
+const key = a + "x" + b;
+
+if (!questions.some(q => q.key === key)) {
+questions.push({ a, b, key });
+}
+}
+
+document.getElementById("startScreen").classList.add("hidden");
+document.getElementById("result").classList.add("hidden");
+document.getElementById("quiz").classList.remove("hidden");
+document.getElementById("stats").classList.remove("hidden");
+document.getElementById("progressBg").classList.remove("hidden");
+document.getElementById("mascot").textContent = "🦁";
+
+updateStats();
+nextQuestion();
+}
+
+function nextQuestion() {
+if (round >= questions.length || lives <= 0) {
+finishGame();
+return;
+}
+
+locked = false;
+
+const q = questions[round];
+correctAnswer = q.a * q.b;
+
+document.getElementById("question").textContent =
+${q.a} × ${q.b} = ؟;
+
+document.getElementById("message").textContent =
+"ركز يا بطل! أنت قدها! 💪";
+
+const options = new Set([correctAnswer]);
+
+while (options.size < 4) {
+let value;
+if (Math.random() < 0.5) {
+value = Math.floor(Math.random() * 12) * q.a;
+} else {
+value = Math.floor(Math.random() * 144) + 1;
+}
+
+if (value !== correctAnswer) options.add(value);
+}
+
+const answers = document.getElementById("answers");
+answers.innerHTML = "";
+
+shuffle([...options]).forEach(value => {
+const btn = document.createElement("button");
+btn.className = "answer";
+btn.textContent = value;
+btn.onclick = () => checkAnswer(value, btn);
+answers.appendChild(btn);
+});
+
+updateStats();
+}
+
+function checkAnswer(value, button) {
+if (locked) return;
+locked = true;
+
+const buttons = document.querySelectorAll(".answer");
+buttons.forEach(btn => btn.disabled = true);
+
+if (value === correctAnswer) {
+score += 10;
+button.classList.add("correct");
+
+document.getElementById("message").textContent =
+encouragement[Math.floor(Math.random() * encouragement.length)];
+
+document.getElementById("mascot").textContent = "🦁";
+playTone(660, 0.12);
+setTimeout(() => playTone(880, 0.15), 120);
+
+} else {
+lives--;
+wrongCount++;
+button.classList.add("wrong");
+
+buttons.forEach(btn => {
+if (Number(btn.textContent) === correctAnswer) {
+btn.classList.add("correct");
+}
+});
+
+document.getElementById("message").textContent =
+${tryAgainMessages[Math.floor(Math.random() * tryAgainMessages.length)]} الإجابة الصحيحة: ${correctAnswer};
+
+document.getElementById("mascot").textContent = "🤗";
+playTone(240, 0.2);
+}
+
+round++;
+updateStats();
+
+setTimeout(nextQuestion, 1300);
+}
+
+function updateStats() {
+document.getElementById("score").textContent = score;
+document.getElementById("lives").textContent = "❤️".repeat(lives) || "0";
+document.getElementById("round").textContent =
+Math.min(round + 1, 10) + " / 10";
+
+document.getElementById("progress").style.width =
+(round / 10 * 100) + "%";
+}
+
+function finishGame() {
+document.getElementById("quiz").classList.add("hidden");
+document.getElementById("result").classList.remove("hidden");
+document.getElementById("stats").classList.add("hidden");
+document.getElementById("progressBg").classList.add("hidden");
+
+const emoji = score >= 80 ? "🏆" :
+score >= 50 ? "🥳" : "🌱";
+
+const title = score >= 80 ? "أسطورة الحساب!" :
+score >= 50 ? "بطل شاطر!" : "بطل بيتعلم!";
+
+let message;
+
+if (score >= 80) {
+message = "يا سلام! أنت نجم جدول الضرب! استمر، فالمزيد من النجاحات ينتظرك! 🌟";
+} else if (score >= 50) {
+message = "أحسنت! أنت بتتقدم بشكل رائع. جرب مرة تانية وهتكسر رقمك القياسي! 💪";
+} else {
+message = "متزعلش يا بطل! كل محاولة بتخليك أشطر. راجع جدول الضرب وجرب تاني! ❤️";
+}
+
+document.getElementById("resultEmoji").textContent = emoji;
+document.getElementById("resultTitle").textContent = title;
+document.getElementById("resultScore").textContent = score + " / 100";
+document.getElementById("resultMessage").textContent =
+message + أجبت خطأ ${wrongCount} مرة، وتقدر تحسن نتيجتك في الجولة الجاية.;
+
+document.getElementById("message").textContent =
+"خلصت المغامرة! برافو عليك! 🎉";
+
+if (score >= 50) celebrate();
+}
+
+function celebrate() {
+const symbols = ["⭐", "🎉", "🌈", "✨", "🎊"];
+
+for (let i = 0; i < 35; i++) {
+const el = document.createElement("div");
+el.className = "confetti";
+el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+el.style.left = Math.random() * 100 + "vw";
+el.style.animationDelay = Math.random() * 1.5 + "s";
+document.body.appendChild(el);
+setTimeout(() => el.remove(), 4000);
+}
+}
+
+function playTone(frequency, duration) {
+try {
+const AudioContext = window.AudioContext ||
+window.webkitAudioContext;
+const ctx = new AudioContext();
+const oscillator = ctx.createOscillator();
+const gain = ctx.createGain();
+
+oscillator.frequency.value = frequency;
+oscillator.type = "sine";
+gain.gain.value = 0.08;
+
+oscillator.connect(gain);
+gain.connect(ctx.destination);
+
+oscillator.start();
+oscillator.stop(ctx.currentTime + duration);
+oscillator.onended = () => ctx.close();
+} catch (e) {
+// تستمر اللعبة حتى لو لم تتوفر المؤثرات الصوتية
+}
+}
+</script>
+
+</body>
+</html>
